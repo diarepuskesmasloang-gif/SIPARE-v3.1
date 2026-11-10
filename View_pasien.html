@@ -1,0 +1,180 @@
+<style>
+.tgl-id{font-size:12px;font-weight:600;color:#5B7A6C;margin-top:3px;min-height:15px}
+.ps-wrap{max-width:1100px;margin:0 auto}
+.ps-bar{background:#fff;border:1px solid #D7EBDF;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ps-bar h2{margin:0;color:#128A38;font-size:18px;margin-right:auto}
+.ps-bar input,.ps-bar select{padding:8px 12px;border:1px solid #A5D6A7;border-radius:8px;background:#F1F8E9;min-width:150px}
+.ps-info{color:#5B7A6C;font-size:13px;margin:0 2px 10px}
+.ps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ps-card{border-radius:14px;padding:14px;border:2px solid;box-shadow:0 3px 8px rgba(0,0,0,.05);display:flex;flex-direction:column;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.ps-card:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
+.ps-card:focus-visible{outline:3px solid #1E9BFF;outline-offset:2px}
+.ps-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.ps-nm{font-weight:800;font-size:15px;color:#16322A;word-break:break-word}
+.ps-no{font-size:11px;font-weight:700;background:rgba(255,255,255,.75);border-radius:10px;padding:2px 8px;white-space:nowrap}
+.ps-row{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0;border-bottom:1px dashed rgba(0,0,0,.12)}
+.ps-row:last-of-type{border-bottom:0}
+.ps-row span:first-child{color:#4A5F55;font-weight:600}.ps-row span:last-child{font-weight:700;text-align:right;color:#16322A}
+.ps-row.th{flex-direction:column;gap:2px}
+.ps-row.th span:last-child{text-align:left;font-weight:600;white-space:pre-line;word-break:break-word}
+.ps-mut{color:#7A8F85;font-weight:600;font-style:italic}
+.ps-edit{border:0;border-radius:8px;background:#1E9BFF;color:#fff;font-weight:700;padding:10px;cursor:pointer}
+.ps-edit:hover{background:#0B6FCC}
+.ps-card.baru{border-style:dashed}.ps-card.baru .ps-nm{color:#8A6100;font-weight:700}
+.ps-dt.baru .ps-edit{background:#F59E0B}.ps-dt.baru .ps-edit:hover{background:#D97706}
+.ps-dt .ps-nm{font-size:17px;margin-bottom:2px}
+.ps-dt .ps-row{border-bottom:1px dashed rgba(0,0,0,.15);padding:6px 0}
+.ps-hint{font-size:12px;color:#8A6100;background:#FFF6DD;border-radius:8px;padding:6px 10px;margin-bottom:10px}
+.ps-pg{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:14px}
+.ps-pg button{border:0;border-radius:8px;background:#22B14C;color:#fff;font-weight:700;padding:7px 16px;cursor:pointer}
+.ps-pg button:disabled{opacity:.4;cursor:default}
+.ps-empty{text-align:center;color:#5B7A6C;padding:30px}
+.ps-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:60;display:none;align-items:center;justify-content:center;padding:16px}
+.ps-ov.on{display:flex}
+.ps-md{background:#fff;border-radius:14px;padding:18px;width:100%;max-width:520px;max-height:92vh;overflow:auto}
+.ps-md h3{margin:0 0 10px;color:#128A38}
+.ps-f{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.ps-f{grid-template-columns:1fr}}
+.ps-f label{display:block;font-weight:600;font-size:12px;color:#128A38;margin-bottom:3px}
+.ps-f input,.ps-f select{width:100%;padding:8px;border:1px solid #D7EBDF;border-radius:8px;background:#fff}
+.ps-f .full{grid-column:1/-1}
+.ps-f textarea{width:100%;padding:8px;border:1px solid #D7EBDF;border-radius:8px;background:#fff;font:inherit;resize:vertical;min-height:56px}
+.ps-act{display:flex;gap:10px;margin-top:14px}
+.ps-act button{flex:1;border:0;border-radius:8px;padding:10px;font-weight:700;cursor:pointer}
+.ps-act .sv{background:#2BE05F;color:#06361A}.ps-act .cn{background:#E3ECE6;color:#16322A}
+.ps-act button:disabled{opacity:.6;cursor:wait}
+</style>
+<div class="ps-wrap">
+  <div class="ps-bar">
+    <h2>DATA PASIEN</h2>
+    <input id="psQ" placeholder="Cari nama / desa / NIK…">
+    <select id="psMg"><option value="">— Semua Minggu —</option></select>
+  </div>
+  <div class="ps-info" id="psInfo"></div>
+  <div class="ps-grid" id="psGrid"><div class="ps-empty">Memuat…</div></div>
+  <div class="ps-pg" id="psPg" hidden>
+    <button id="psPrev">‹ Sebelumnya</button><span id="psPgT"></span><button id="psNext">Berikutnya ›</button>
+  </div>
+</div>
+<div class="ps-ov" id="dOv">
+  <div class="ps-md ps-dt" id="dBox">
+    <div id="dBody"></div>
+    <div class="ps-act"><button class="cn" id="dCn">Tutup</button><button class="ps-edit" id="dEd" style="flex:1">Edit</button></div>
+  </div>
+</div>
+<div class="ps-ov" id="psOv">
+  <div class="ps-md">
+    <h3 id="eTitle">Edit Data Pasien</h3>
+    <div class="ps-hint" id="eHint" hidden>Kasus ini berasal dari laporan kunjungan. Desa dan tanggal berobat mengikuti laporan tersebut dan tidak dapat diubah di sini.</div>
+    <div class="ps-f">
+      <div class="full"><label for="eNama">Nama pasien</label><input id="eNama"></div>
+      <div><label for="eJk">Jenis kelamin</label><select id="eJk"><option value="">— Pilih —</option><option>Laki-laki</option><option>Perempuan</option></select></div>
+      <div><label for="eDesa">Desa</label><select id="eDesa"></select></div>
+      <div><label for="eTs">Tanggal sakit</label><input type="date" id="eTs"></div>
+      <div><label for="eTb">Tanggal berobat</label><input type="date" id="eTb"></div>
+      <div><label for="eTtl">Tanggal lahir</label><input type="date" id="eTtl"></div>
+      <div><label for="eNik">NIK (16 digit)</label><input id="eNik" inputmode="numeric" maxlength="16"></div>
+      <div class="full"><label for="eUmur">Umur (dipakai jika tanggal lahir &amp; NIK kosong)</label><input id="eUmur" type="number" min="0" max="120"></div>
+      <div class="full" id="eThW"><label for="eTh">Therapy</label><textarea id="eTh" maxlength="300" placeholder="mis. Oralit, Zinc 10 hari"></textarea></div>
+    </div>
+    <div id="eErr" class="err"></div>
+    <div class="ps-act"><button class="cn" id="eCn">Batal</button><button class="sv" id="eSv">Simpan</button></div>
+  </div>
+</div>
+<script>
+(function(){
+  const BLN_ = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  function tglIdText(v){ const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? m[3] + ' ' + BLN_[+m[2] - 1] + ' ' + m[1] : ''; }
+  function bindTgl(id){
+    const el = $(id), h = document.createElement('div'); h.className = 'tgl-id';
+    el.insertAdjacentElement('afterend', h);
+    const u = () => { h.textContent = el.value ? 'Terpilih: ' + tglIdText(el.value) : ''; };
+    el.addEventListener('input', u); el.addEventListener('change', u); el._upd = u; u();
+  }
+  // Warna unik per kartu: hue berbeda (sudut emas) -> tidak ada dua kartu berdekatan yang sama; latar pastel cerah, teks tetap gelap
+  function warna(n){
+    const hue = Math.round((n * 137.508) % 360);
+    return ['hsl(' + hue + ',90%,89%)', 'hsl(' + hue + ',72%,62%)'];
+  }
+  const st = { page: 1, desaLoaded: false, id: '', map: {} };
+  let tmr;
+  const esc2 = v => String(v == null ? '' : v).trim() === '' ? '<em class="ps-mut">—</em>' : esc(v);
+  function card(x){
+    const c = warna(x.row);
+    const f = [['Desa',x.desa],['Jenis kelamin',x.jk]]
+      .map(p => '<div class="ps-row"><span>'+p[0]+'</span><span>'+esc2(p[1])+'</span></div>').join('');
+    return '<div class="ps-card'+(x.baru?' baru':'')+'" tabindex="0" role="button" data-id="'+esc(x.id)+'" style="background:'+c[0]+';border-color:'+c[1]+'"><div class="ps-top"><div class="ps-nm">'+esc(x.nama)+'</div></div>'+f+'</div>';
+  }
+  function openDetail(id){
+    const x = st.map[id]; if (!x) return;
+    const c = warna(x.row);
+    const f = [['Tanggal sakit',x.tglSakit],['Tanggal berobat',x.tglBerobat],['Desa',x.desa],['Tanggal lahir',x.ttl],['NIK',x.nik],['Umur',x.umur===''||x.umur==null?'':x.umur+' th'],['Jenis kelamin',x.jk],['Minggu ke',x.minggu]]
+      .filter(p => String(p[1]).trim() !== '')
+      .map(p => '<div class="ps-row"><span>'+p[0]+'</span><span>'+esc(p[1])+'</span></div>').join('');
+    const th = x.therapy == null ? '' : '<div class="ps-row th"><span>Therapy</span><span>'+(String(x.therapy).trim() ? esc(x.therapy) : '<em class="ps-mut">Belum diisi</em>')+'</span></div>';
+    $('dBody').innerHTML = '<div class="ps-top"><div class="ps-nm">'+esc(x.nama)+'</div>'+(String(x.no).trim()?'<div class="ps-no" style="background:'+c[0]+'">No. '+esc(x.no)+'</div>':'')+'</div>'+f+th;
+    $('dBox').className = 'ps-md ps-dt' + (x.baru ? ' baru' : '');
+    $('dBox').style.borderTop = '6px solid ' + c[1];
+    $('dEd').textContent = x.baru ? 'Lengkapi' : 'Edit';
+    $('dEd').dataset.id = x.id;
+    $('dOv').classList.add('on');
+  }
+  function closeDetail(){ $('dOv').classList.remove('on'); }
+  async function load(){
+    $('psGrid').innerHTML = '<div class="ps-empty">Memuat…</div>';
+    try {
+      const r = await sec('getPasien', { q: $('psQ').value, minggu: $('psMg').value, page: st.page });
+      st.page = r.page;
+      st.map = {}; r.rows.forEach(x => { st.map[x.id] = x; });
+      $('psInfo').textContent = r.total + ' pasien wabah';
+      $('psGrid').innerHTML = r.rows.length ? r.rows.map(card).join('') : '<div class="ps-empty">Belum ada data pasien.</div>';
+      $('psPg').hidden = r.pages <= 1;
+      $('psPgT').textContent = 'Halaman ' + r.page + ' / ' + r.pages;
+      $('psPrev').disabled = r.page <= 1; $('psNext').disabled = r.page >= r.pages;
+    } catch (e) { $('psGrid').innerHTML = '<div class="ps-empty err">'+esc(e.message)+'</div>'; }
+  }
+  async function initFilter(){
+    if ($('psMg').options.length > 1) return;
+    try { const l = await sec('getMingguList'); $('psMg').innerHTML = '<option value="">— Semua Minggu —</option>' + l.map(m => '<option value="'+esc(m.val)+'">'+esc(m.label)+'</option>').join(''); } catch (e) {}
+  }
+  async function openEdit(id){
+    $('eErr').textContent = '';
+    try {
+      if (!st.desaLoaded) { const d = await sec('getDesa'); $('eDesa').innerHTML = '<option value="">— Pilih —</option>' + d.map(n => '<option>'+esc(n)+'</option>').join(''); st.desaLoaded = true; }
+      const p = await sec('getPasienRow', id);
+      st.id = p.id;
+      $('eNama').value = p.nama; $('eJk').value = p.jk; $('eDesa').value = p.desa;
+      $('eTs').value = p.tglSakit; $('eTb').value = p.tglBerobat; $('eTtl').value = p.ttl; $('eNik').value = p.nik; $('eUmur').value = p.umur;
+      $('eTh').value = p.therapy == null ? '' : p.therapy; $('eThW').hidden = p.therapy == null;     // disembunyikan bila database belum punya kolom Therapy
+      ['eTs','eTb','eTtl'].forEach(i => $(i)._upd());
+      $('eDesa').disabled = $('eTb').disabled = !!p.baru; $('eHint').hidden = !p.baru;
+      $('eTitle').textContent = p.baru ? 'Lengkapi Data Pasien' : 'Edit Data Pasien';
+      $('psOv').classList.add('on');
+    } catch (e) { toast(e.message); }
+  }
+  function closeEdit(){ $('psOv').classList.remove('on'); }
+  async function save(){
+    $('eSv').disabled = true; $('eErr').textContent = '';
+    try {
+      const o = { id: st.id, nama: $('eNama').value, jk: $('eJk').value, desa: $('eDesa').value, tglSakit: $('eTs').value, tglBerobat: $('eTb').value, ttl: $('eTtl').value, nik: $('eNik').value, umur: $('eUmur').value };
+      if (!$('eThW').hidden) o.therapy = $('eTh').value;
+      await sec('updatePasien', o);
+      closeEdit(); toast('Data pasien diperbarui.'); load();
+    } catch (e) { $('eErr').textContent = e.message; }
+    $('eSv').disabled = false;
+  }
+  ['eTs','eTb','eTtl'].forEach(bindTgl);
+  Views.Pasien = { show: async function(){ await initFilter(); load(); } };
+  $('psQ').oninput = () => { clearTimeout(tmr); tmr = setTimeout(() => { st.page = 1; load(); }, 350); };
+  $('psMg').onchange = () => { st.page = 1; load(); };
+  $('psPrev').onclick = () => { st.page--; load(); };
+  $('psNext').onclick = () => { st.page++; load(); };
+  $('psGrid').onclick = e => { const b = e.target.closest('.ps-card'); if (b) openDetail(b.dataset.id); };
+  $('psGrid').onkeydown = e => { if (e.key !== 'Enter' && e.key !== ' ') return; const b = e.target.closest('.ps-card'); if (b) { e.preventDefault(); openDetail(b.dataset.id); } };
+  $('dCn').onclick = closeDetail;
+  $('dEd').onclick = () => { const id = $('dEd').dataset.id; closeDetail(); openEdit(id); };
+  $('dOv').onclick = e => { if (e.target === $('dOv')) closeDetail(); };
+  $('eCn').onclick = closeEdit; $('eSv').onclick = save;
+  $('psOv').onclick = e => { if (e.target === $('psOv')) closeEdit(); };
+})();
+</script>

@@ -1,0 +1,127 @@
+<style>
+.tgl-id{font-size:12px;font-weight:600;color:#5B7A6C;margin-top:3px;min-height:15px}
+.in-wrap{max-width:1080px;margin:0 auto}
+.in-head{background:#fff;border:1px solid #D7EBDF;border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.in-head h2{margin:0;color:#128A38;font-size:18px;flex:1;min-width:140px}
+.in-head label{font-weight:700;color:#128A38;font-size:13px;margin-right:8px}
+.in-head input[type=date]{padding:8px 12px;border:1px solid #A5D6A7;border-radius:8px;background:#F1F8E9;font-weight:700;color:#1B5E20}
+.in-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+@media(max-width:800px){.in-grid{grid-template-columns:1fr}}
+.in-box{background:#fff;border:2px solid #C8E6C9;border-radius:14px;padding:14px}
+.in-box h3{margin:0 0 4px;color:#fff;text-align:center;border-radius:8px;padding:8px;font-size:15px;letter-spacing:.4px}
+.in-box.u h3{background:#0050A0}.in-box.w h3{background:#008837}
+.in-box small{display:block;color:#5B7A6C;margin:6px 0 8px}
+.in-box textarea{width:100%;min-height:260px;padding:10px;border:1px solid #D7EBDF;border-radius:8px;font:13px/1.45 Consolas,Menlo,monospace;resize:vertical;background:#FCFFFD}
+.in-box textarea:focus{outline:2px solid #1E9BFF;border-color:#1E9BFF}
+.in-chk{display:flex;align-items:center;gap:6px;font-size:13px;color:#2E7D32;margin:8px 0 0;min-height:24px}
+.btn-in{display:block;width:100%;margin-top:10px;padding:12px;border:0;border-radius:10px;background:#2BE05F;color:#06361A;font-weight:800;font-size:15px;letter-spacing:.8px;cursor:pointer;box-shadow:0 3px 8px rgba(43,224,95,.4)}
+.btn-in:hover{background:#1FCB52}.btn-in:disabled{opacity:.6;cursor:wait}
+.in-res{margin:10px 0 0;padding:0;list-style:none;font-size:13px}
+.in-res li{padding:7px 10px;border-radius:8px;margin-bottom:5px;line-height:1.35}
+.in-res .ok{background:#E6F9EC;color:#0B6B2A}.in-res .skip{background:#FFF6DD;color:#8A6100}
+.in-res .warn{background:#FFF0D6;color:#9A5200}.in-res .err{background:#FDE7E7;color:#B02A2A}
+.in-res .sum{background:#EAF3FF;color:#0B4F99;font-weight:700}
+.in-box.q{margin-top:14px}.in-box.q h3{background:#B45F06}
+.in-qa{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.in-qa button{border:0;border-radius:8px;padding:5px 10px;font-weight:700;font-size:12px;cursor:pointer;background:#E3ECE6;color:#16322A}
+.in-res ul{margin:4px 0 0;padding-left:18px}
+</style>
+<div class="in-wrap">
+  <div class="in-head">
+    <h2>INPUT DATA</h2>
+    <div><label for="inTgl">📅 Tanggal laporan</label><input type="date" id="inTgl"></div>
+  </div>
+  <div class="in-grid">
+    <div class="in-box u">
+      <h3>LAPORAN UMUM</h3>
+      <small>Tempel laporan kunjungan harian dari WhatsApp (boleh beberapa pustu sekaligus). Tersimpan sebagai arsip harian; rekap mingguan diisi petugas di sheet REGISTER_MANUAL.</small>
+      <textarea id="inUmum" placeholder="Selamat malam, jumlah kunjungan pustu mingar 15 orang&#10;L 4 orang&#10;P 11 orang&#10;Mingguan wabah Nihil.&#10;Terima kasih"></textarea>
+      <label class="in-chk"><input type="checkbox" id="inRep"> Timpa data jika tanggal &amp; desa sudah ada</label>
+      <button class="btn-in" id="btnUmum">INPUT</button>
+      <ul class="in-res" id="resUmum"></ul>
+    </div>
+    <div class="in-box w">
+      <h3>LAPORAN WABAH</h3>
+      <small>Tempel laporan pasien wabah diare dari WhatsApp (boleh beberapa pasien sekaligus).</small>
+      <textarea id="inWabah" placeholder="Selamat siang&#10;Lapor pasien diare Ileboli&#10;Nama : Yohanes Arkian (36 thn)&#10;TL : 02-07-1990&#10;NIK : 5313010207900002&#10;Tgl sakit : 13-10-2026&#10;Tgl Berobat: 14-10-2026&#10;Therapy : Oralit, Zinc 10 hari&#10;Terima kasih"></textarea>
+      <div class="in-chk"></div>
+      <button class="btn-in" id="btnWabah">INPUT</button>
+      <ul class="in-res" id="resWabah"></ul>
+    </div>
+  </div>
+  <div class="in-box q" id="inQ" hidden>
+    <h3>ANTREAN OFFLINE</h3>
+    <small>Laporan yang disimpan saat tidak ada koneksi. Dikirim otomatis begitu online.</small>
+    <ul class="in-res" id="inQL"></ul>
+    <button class="btn-in" id="btnQ" type="button">KIRIM SEKARANG</button>
+  </div>
+</div>
+<script>
+(function(){
+  const BLN_ = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  function tglIdText(v){ const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? m[3] + ' ' + BLN_[+m[2] - 1] + ' ' + m[1] : ''; }
+  function bindTgl(id){
+    const el = $(id), h = document.createElement('div'); h.className = 'tgl-id';
+    el.insertAdjacentElement('afterend', h);
+    const u = () => { h.textContent = el.value ? 'Terpilih: ' + tglIdText(el.value) : ''; };
+    el.addEventListener('input', u); el.addEventListener('change', u); el._upd = u; u();
+  }
+  function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function render(ul, r, errMsg){
+    if (errMsg) { ul.innerHTML = '<li class="err">'+esc(errMsg)+'</li>'; return; }
+    const n = r.results.length, ok = r.ok;
+    ul.innerHTML = '<li class="sum">'+ok+' dari '+n+' data berhasil disimpan.</li>' +
+      r.results.map(x => '<li class="'+esc(x.s)+'">'+({ok:'✔ ',skip:'↷ ',warn:'⚠ ',err:'✖ '}[x.s]||'')+esc(x.t)+'</li>').join('');
+  }
+  async function run(btn, ul, ta, fn, args){
+    const tgl = $('inTgl').value, text = ta.value;
+    if (!tgl) return render(ul, null, 'Pilih tanggal laporan terlebih dahulu.');
+    if (!text.trim()) return render(ul, null, 'Kotak laporan masih kosong.');
+    if (text.length > 20000) return render(ul, null, 'Teks terlalu panjang (maks. 20.000 karakter).');
+    btn.disabled = true; const o = btn.textContent; btn.textContent = 'MEMPROSES…'; ul.innerHTML = '';
+    try {
+      const r = await sec(fn, tgl, text, ...args);
+      if (r && r.queued) {
+        ul.innerHTML = '<li class="warn">⏳ Tidak ada koneksi. Laporan disimpan di perangkat dan dikirim otomatis saat online.' + (r.persisted ? '' : ' Penyimpanan perangkat tidak tersedia: jangan menutup halaman ini sebelum terkirim.') + '</li>';
+        ta.value = ''; toast('Laporan disimpan offline (' + r.n + ' menunggu).');
+      } else {
+        render(ul, r);
+        if (r.ok && r.results.every(x => x.s === 'ok')) { ta.value = ''; toast('Data berhasil disimpan.'); }
+      }
+    } catch (e) { render(ul, null, e.message); }
+    btn.disabled = false; btn.textContent = o;
+  }
+  function renderQ(){
+    const box = $('inQL'); if (!box) return;
+    const L = OFFQ.list();
+    $('inQ').hidden = !L.length;
+    $('btnQ').hidden = !L.some(x => x.st === 'pending');
+    box.innerHTML = L.slice().reverse().map(x => {
+      const jenis = x.fn === 'saveLaporanUmum' ? 'Laporan Umum' : 'Laporan Wabah', tg = x.args ? tglIdText(x.args[0]) : '';
+      const head = '<b>' + jenis + (tg ? ' — ' + esc(tg) : '') + '</b> · disimpan ' + esc(new Date(x.ts).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }));
+      if (x.st === 'pending') return '<li class="skip">' + head + '<br>⏳ Menunggu dikirim.<div class="in-qa"><button data-a="back" data-id="' + esc(x.id) + '">Kembalikan ke kotak</button><button data-a="del" data-id="' + esc(x.id) + '">Hapus</button></div></li>';
+      if (x.st === 'error') return '<li class="err">' + head + '<br>✖ Ditolak server: ' + esc(x.msg) + '<div class="in-qa"><button data-a="back" data-id="' + esc(x.id) + '">Kembalikan ke kotak</button><button data-a="del" data-id="' + esc(x.id) + '">Hapus</button></div></li>';
+      const s = x.sum || { ok: 0, n: 0, lines: [] };
+      return '<li class="' + (s.lines.length ? 'warn' : 'ok') + '">' + head + '<br>✔ Terkirim: ' + s.ok + ' dari ' + s.n + ' data tersimpan.' + (s.lines.length ? '<ul>' + s.lines.map(t => '<li>' + esc(t) + '</li>').join('') + '</ul>' : '') + '<div class="in-qa"><button data-a="del" data-id="' + esc(x.id) + '">Sembunyikan</button></div></li>';
+    }).join('');
+  }
+  Views.Input = {
+    show: function(){ if (!$('inTgl').value) $('inTgl').value = today(); $('inTgl')._upd(); renderQ(); }
+  };
+  OFFQ.on('input', renderQ);
+  $('btnQ').onclick = () => OFFQ.send();
+  $('inQL').onclick = e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return;
+    if (b.dataset.a === 'del') { OFFQ.remove(b.dataset.id); return; }
+    const it = OFFQ.take(b.dataset.id); if (!it || !it.args) return;
+    const wab = it.fn === 'saveLaporanWabah', ta = $(wab ? 'inWabah' : 'inUmum');
+    ta.value = ta.value.trim() ? ta.value + '\n\n' + it.args[1] : it.args[1];
+    $('inTgl').value = it.args[0]; $('inTgl')._upd();
+    if (!wab) $('inRep').checked = !!it.args[2];
+    toast('Laporan dikembalikan ke kotak input.');
+  };
+  bindTgl('inTgl');
+  $('btnUmum').onclick = () => run($('btnUmum'), $('resUmum'), $('inUmum'), 'saveLaporanUmum', [$('inRep').checked]);
+  $('btnWabah').onclick = () => run($('btnWabah'), $('resWabah'), $('inWabah'), 'saveLaporanWabah', []);
+})();
+</script>

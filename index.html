@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id"><head><base target="_top"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIPARE UPTD PKM LOANG</title>
+<style>
+:root{--g:#22B14C;--g2:#3DD05F;--gd:#128A38;--gl:#E8F8EE;--b:#1E9BFF;--bd:#0B6FCC;--t:#16322A;--m:#5B7A6C;--ln:#D7EBDF;--r:#D93C3C}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 "Segoe UI",Roboto,Arial,sans-serif;color:var(--t);background-color:#F4FBF7;background-repeat:no-repeat;background-position:center;background-size:cover;background-attachment:fixed}
+[hidden]{display:none!important}
+button,input,select{font:inherit}
+.btn{background:var(--g);color:#fff;border:0;border-radius:8px;padding:10px 16px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+.btn:hover{background:var(--gd)}.btn:disabled{opacity:.6;cursor:wait}
+.btn.sm{padding:6px 12px;font-size:13px}.btn.bl{background:var(--b)}.btn.bl:hover{background:var(--bd)}
+.err{color:var(--r);min-height:18px;font-size:13px}
+.ok{color:var(--gd)}
+/* LOGIN */
+#login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 20px 90px;background:linear-gradient(160deg,rgba(255,255,255,.80) 40%,rgba(232,248,238,.60))}
+.lbox{width:100%;max-width:380px}
+.lhead{text-align:center;margin-bottom:14px}
+.lhead h1{margin:6px 0 0;color:var(--gd);letter-spacing:1px}.lhead p{margin:0;color:var(--m);font-weight:600}
+.lg{width:78px;height:78px;margin:auto}.lg img,.bl img{width:100%;height:100%;object-fit:contain}
+.dlg{background:#fff;border:1px solid var(--ln);border-top:5px solid var(--g);border-radius:14px;padding:20px;box-shadow:0 8px 24px rgba(18,138,56,.12)}
+.dlg label{display:block;font-weight:600;margin:10px 0 4px;font-size:13px;color:var(--gd)}
+.dlg input,.dlg select{width:100%;padding:10px;border:1px solid var(--ln);border-radius:8px;background:#fff}
+.dlg input:focus,.dlg select:focus{outline:2px solid var(--b);border-color:var(--b)}
+.dlg input[readonly]{background:var(--gl)}
+.pw{position:relative}.pw button{position:absolute;right:6px;top:6px;border:0;background:none;color:var(--bd);cursor:pointer;font-size:12px;padding:5px}
+.dlg .btn{width:100%;margin-top:8px}
+.wa{display:block;width:100%;margin-top:14px;background:var(--g)}
+.sign{position:fixed;left:14px;bottom:10px;max-width:46vw;color:var(--m);font-size:11px}
+.sign img{max-height:70px;max-width:100%;display:block}
+/* KOP */
+.kop{position:fixed;top:0;left:0;right:0;height:60px;z-index:30;display:flex;align-items:center;gap:12px;padding:0 14px;color:#fff;background:linear-gradient(90deg,var(--g),var(--g2));border-bottom:4px solid var(--b)}
+#hb{width:42px;height:42px;border:0;border-radius:8px;background:rgba(255,255,255,.18);cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px}
+#hb i{display:block;width:22px;height:3px;background:#fff;border-radius:2px}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer;min-width:0}
+.brand .bl{width:40px;height:40px;background:#fff;border-radius:50%;padding:3px;flex:none}
+.brand b{font-size:17px;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.usr{margin-left:auto;display:flex;align-items:center;gap:10px}
+.usr span{font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn.out{background:#fff;color:var(--gd);padding:7px 14px}.btn.out:hover{background:var(--b);color:#fff}
+#ov{position:fixed;inset:60px 0 0 0;background:rgba(0,0,0,.28);z-index:19;display:none}
+#menu{position:fixed;top:64px;left:0;bottom:0;width:240px;background:#fff;z-index:20;border-right:1px solid var(--ln);padding:12px;transform:translateX(-105%);transition:transform .22s;box-shadow:4px 0 16px rgba(0,0,0,.08)}
+body.mo #menu{transform:none}body.mo #ov{display:block}
+#menu button{display:block;width:100%;text-align:left;padding:12px 14px;margin-bottom:6px;border:0;border-radius:8px;background:none;color:var(--t);font-weight:600;cursor:pointer}
+#menu button:hover{background:var(--gl)}#menu button.on{background:var(--g);color:#fff}
+main{padding:76px 16px 30px;max-width:1100px;margin:auto}
+.view{display:none}.view.on{display:block}
+.card{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:16px;margin-bottom:14px}
+.card h2,.card h3{margin:0 0 8px;color:var(--gd)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ld{padding:30px;text-align:center;color:var(--m)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.tile{border:0;text-align:left;background:var(--gl);border-left:5px solid var(--g);border-radius:10px;padding:16px;cursor:pointer;color:var(--t)}
+.tile:hover{border-left-color:var(--b)}.tile b{display:block;color:var(--gd);font-size:16px}
+.tabs{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--ln);background:#fff;border-radius:20px;padding:6px 16px;cursor:pointer;font-weight:600;color:var(--m)}
+.tabs button.on{background:var(--b);border-color:var(--b);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--ln);border-bottom:4px solid var(--g);border-radius:12px;padding:12px}
+.kpi:nth-child(2){border-bottom-color:var(--b)}.kpi small{color:var(--m)}.kpi b{display:block;font-size:24px;color:var(--gd)}
+.chart{overflow-x:auto}
+.tw{overflow:auto}
+.tb{width:100%;border-collapse:collapse;font-size:13px}
+.tb th{background:var(--g);color:#fff;text-align:left;padding:8px;position:sticky;top:0;white-space:nowrap}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--ln);white-space:nowrap}
+.tb tr:nth-child(even) td{background:#F7FCF9}
+.tb tfoot td{font-weight:700;background:var(--gl)}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.fg label{display:block;font-weight:600;font-size:13px;color:var(--gd);margin-bottom:3px}
+.fg input,.fg select,.fl input,.fl select{width:100%;padding:9px;border:1px solid var(--ln);border-radius:8px;background:#fff}
+.fg input[readonly]{background:var(--gl)}
+.fl{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.fl input,.fl select{width:auto;flex:1;min-width:140px}
+.pg{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--t);color:#fff;padding:10px 18px;border-radius:24px;z-index:99;display:none}
+
+/* HOME: ikon informasi, asisten virtual, pop-up */
+.home{display:flex;gap:18px;align-items:flex-start}
+.home-l{flex:1;min-width:0}
+.home-r{flex:none;width:clamp(190px,21vw,300px);position:fixed;right:2vw;bottom:0;z-index:5;text-align:center;pointer-events:none}
+.home-r .bub{pointer-events:auto}
+.home-r img{display:block;width:100%;height:auto;max-height:68vh;object-fit:contain;margin:0 auto;filter:drop-shadow(0 6px 8px rgba(0,0,0,.25))}
+.home-r::after{content:"";position:absolute;left:12%;right:12%;bottom:-6px;height:14px;border-radius:50%;background:rgba(0,0,0,.28);filter:blur(5px);z-index:-1}
+.home-l{padding-right:min(24vw,330px)}
+.bub{background:#fff;border:1px solid var(--ln);border-left:5px solid var(--g);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--t);text-align:left;margin-bottom:8px;box-shadow:0 4px 12px rgba(18,138,56,.10)}
+.icons{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.ico{width:256px;max-width:100%;height:256px;border:1px solid var(--ln);border-bottom:5px solid var(--g);border-radius:16px;background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--gd);font-weight:700;font-size:15px;transition:transform .15s,box-shadow .15s}
+.ico:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(18,138,56,.18);border-bottom-color:var(--b)}
+.ico svg{width:150px;height:150px}
+#pop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:80;display:none;align-items:center;justify-content:center;padding:14px}
+#pop.on{display:flex}
+.pbox{background:#fff;border-radius:14px;width:100%;max-width:1000px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;border-top:5px solid var(--g)}
+.phead{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--ln)}
+.phead h3{margin:0;color:var(--gd);flex:1;font-size:17px}
+.pbody{overflow:auto;padding:12px 14px}
+.pbody img{display:block;width:100%;height:auto}
+.pbody.zoom img{width:220%;max-width:none}
+.kt{border-collapse:collapse;font-size:12px;white-space:nowrap}
+.kt th,.kt td{border:1px solid var(--ln);padding:4px 8px;text-align:center}
+.kt th{color:var(--t)}
+.kt td:first-child,.kt th:first-child{position:sticky;left:0;color:var(--t);font-weight:700;z-index:1}
+.kt .wk td{font-weight:700}
+.kt .ms{border-left:3px solid #128A38}
+.bub.rain{cursor:pointer;min-height:92px;transition:opacity .18s ease,transform .18s ease;user-select:none}
+.bub.rain:hover{border-left-color:var(--b)}
+.bub.rain:focus-visible{outline:2px solid var(--b);outline-offset:2px}
+.bub.rain.keluar{opacity:0;transform:translateY(4px)}
+.rain-inf{margin-top:6px;font-size:11px;color:var(--m);text-align:right}
+@media(prefers-reduced-motion:reduce){.bub.rain{transition:none}}
+@media(max-width:900px){.home{flex-direction:column}.home-l{padding-right:0}.home-r{position:static;width:100%;max-width:260px;margin:auto}.home-r::after{bottom:-4px}}
+@media(max-width:600px){.ico{width:calc(50% - 8px);height:190px}.ico svg{width:100px;height:100px}}
+@media(max-width:600px){.brand b{font-size:13px}.usr span{display:none}main{padding:72px 10px 24px}}
+@media print{.kop,#menu,#ov{display:none}main{padding:0}}
+.offb{border-radius:10px;padding:9px 12px;margin-bottom:12px;font-size:13px;line-height:1.4;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.offb.off{background:#FFF0D6;border:1px solid #F5C77E;color:#7A4A00}
+.offb.pend{background:#EAF3FF;border:1px solid #B9D6F5;color:#0B4F99}
+
+/* LOGIN: kartu kaca di atas foto latar */
+#login{background:rgba(255,255,255,.06)}
+.lbox{max-width:360px;padding:26px 24px 22px;border-radius:12px;border-top:5px solid var(--g);background:rgba(255,255,255,.28);border:1px solid rgba(255,255,255,.55);border-top:5px solid var(--g);-webkit-backdrop-filter:blur(10px) saturate(1.1);backdrop-filter:blur(10px) saturate(1.1);box-shadow:0 12px 40px rgba(0,0,0,.30)}
+.lhead{margin-bottom:6px}
+.lg{width:84px;height:84px}
+.lhead h1{font-size:22px}
+.dlg{background:transparent;border:0;border-radius:0;box-shadow:none;padding:0}
+.dlg input,.dlg select{background:#fff;border-color:#C9E4D3}
+.dlg input[readonly]{background:var(--gl)}
+.wa{margin-top:12px}
+.sign{background:none;padding:0}
+.sign img{mix-blend-mode:multiply;width:clamp(200px,26vw,380px);max-width:100%;max-height:none;height:auto}
+
+/* HOME: kartu dan ikon memenuhi lebar sampai dekat asisten virtual */
+main.wide{max-width:1500px}
+main.wide .icons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+main.wide .ico{width:100%;max-width:none;height:clamp(220px,20vw,300px)}
+@media(max-width:600px){main.wide .icons{grid-template-columns:repeat(2,minmax(0,1fr))}main.wide .ico{height:190px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+<body>
+
+<!-- ========== LOGIN ========== -->
+<div id="login">
+  <div class="lbox">
+    <div class="lhead"><div class="lg" id="lgL"></div><h1>SIPARE</h1><p>UPTD PUSKESMAS LOANG</p></div>
+    <div class="dlg">
+      <label for="lu">Username</label>
+      <select id="lu"><option value="">Memuat…</option></select>
+      <label for="ln">Nama Lengkap</label>
+      <input id="ln" readonly placeholder="Terisi otomatis">
+      <label for="lp">Password</label>
+      <div class="pw"><input id="lp" type="password" autocomplete="current-password"><button type="button" id="lpt">Lihat</button></div>
+      <div id="lerr" class="err"></div>
+      <button class="btn" id="lgo">MASUK</button>
+      <button class="btn bl" id="lretry" type="button" hidden>MUAT ULANG DAFTAR USERNAME</button>
+    </div>
+    <a id="wa" class="btn wa" target="_blank" rel="noopener">HUBUNGI ADMIN</a>
+  </div>
+  <div class="sign" id="sign"></div>
+</div>
+
+<!-- ========== APLIKASI ========== -->
+<div id="app" hidden>
+  <header class="kop">
+    <button id="hb" aria-label="Menu"><i></i><i></i><i></i></button>
+    <div class="brand" id="brand"><span class="bl" id="kopL"></span><b>SIPARE UPTD PUSKESMAS LOANG</b></div>
+    <div class="usr"><span id="un"></span><button class="btn out" id="out">KELUAR</button></div>
+  </header>
+  <div id="ov"></div>
+  <nav id="menu">
+    <button data-v="Dashboard">Dashboard</button>
+    <button data-v="Input">Input Data</button>
+    <button data-v="Pasien">Data Pasien</button>
+    <button data-v="Register">Register</button>
+  </nav>
+  <main id="main">
+    <div id="offb" class="offb" hidden role="status" aria-live="polite"></div>
+    <section class="view on" id="v_home">
+      <div class="home">
+        <div class="home-l">
+          <div class="card"><h2>HOME</h2>
+            <p>Hai Kak, <b id="hn"></b>. Selamat datang di homepage aplikasi  <b> SIPARE UPTD PUSKESMAS Loang </b>.</p></div>
+          <div class="icons">
+            <button class="ico" data-pop="kalender" aria-label="Kalender">
+              <svg viewBox="0 0 64 64"><rect x="6" y="12" width="52" height="46" rx="8" fill="#fff" stroke="#22B14C" stroke-width="3"/><path d="M6 24h52v-6a6 6 0 0 0-6-6H12a6 6 0 0 0-6 6z" fill="#22B14C"/><rect x="18" y="5" width="5" height="13" rx="2.5" fill="#1E9BFF"/><rect x="41" y="5" width="5" height="13" rx="2.5" fill="#1E9BFF"/><g fill="#22B14C"><rect x="14" y="31" width="8" height="7" rx="1.5"/><rect x="28" y="31" width="8" height="7" rx="1.5"/><rect x="42" y="31" width="8" height="7" rx="1.5"/><rect x="14" y="43" width="8" height="7" rx="1.5"/></g><rect x="28" y="43" width="8" height="7" rx="1.5" fill="#1E9BFF"/><rect x="42" y="43" width="8" height="7" rx="1.5" fill="#22B14C"/></svg>
+              Kalender</button>
+            <button class="ico" data-pop="poster" aria-label="Poster tutorial">
+              <svg viewBox="0 0 64 64"><rect x="10" y="4" width="44" height="56" rx="6" fill="#fff" stroke="#22B14C" stroke-width="3"/><rect x="16" y="11" width="32" height="10" rx="3" fill="#22B14C"/><circle cx="24" cy="35" r="5" fill="#1E9BFF"/><rect x="33" y="31" width="15" height="3.5" rx="1.7" fill="#22B14C"/><rect x="33" y="37.5" width="11" height="3.5" rx="1.7" fill="#22B14C"/><circle cx="24" cy="49" r="5" fill="#1E9BFF"/><rect x="33" y="45" width="15" height="3.5" rx="1.7" fill="#22B14C"/><rect x="33" y="51.5" width="11" height="3.5" rx="1.7" fill="#22B14C"/></svg>
+              Poster Tutorial</button>
+            <button class="ico" data-pop="peta" aria-label="Peta wilayah">
+              <svg viewBox="0 0 64 64"><path d="M6 14l16-6 20 6 16-6v42l-16 6-20-6-16 6z" fill="#E8F8EE" stroke="#22B14C" stroke-width="3" stroke-linejoin="round"/><path d="M22 8v42M42 14v42" stroke="#22B14C" stroke-width="2.5"/><path d="M32 22a7 7 0 0 1 7 7c0 6-7 13-7 13s-7-7-7-13a7 7 0 0 1 7-7z" fill="#1E9BFF"/><circle cx="32" cy="29" r="2.8" fill="#fff"/></svg>
+              Peta Wilayah</button>
+          </div>
+        </div>
+        <aside class="home-r" id="asist" hidden>
+          <div class="bub rain" id="rainBub" role="button" tabindex="0" aria-live="polite" title="Klik untuk pesan berikutnya"><div id="rainTxt"></div><div class="rain-inf" id="rainInf"></div></div>
+          <img id="asImg" alt="Asisten virtual SIPARE">
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="pop"><div class="pbox"><div class="phead"><h3 id="pt"></h3><button class="btn sm bl" id="pz" hidden>Perbesar</button><button class="btn sm" id="pc">Tutup</button></div><div class="pbody" id="pb"></div></div></div>
+<div id="toast"></div>
+
+<script>
+window.addEventListener('error', e => { const x = document.getElementById('lerr'); if (x && !x.textContent) x.textContent = 'Kesalahan skrip: ' + e.message; });
+const SS = { get: k => { try { return sessionStorage.getItem(k) || ''; } catch (e) { return ''; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) {} }, del: k => { try { sessionStorage.removeItem(k); } catch (e) {} } };
+const $ = i => document.getElementById(i);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const Views = {}; let TOKEN = SS.get('sipare_t'), BOOT = null, USERS = [];
+const LOGO_SVG = '<svg viewBox="0 0 64 64"><rect x="4" y="4" width="56" height="56" rx="14" fill="#22B14C"/><path d="M26 14h12v12h12v12H38v12H26V38H14V26h12z" fill="#fff"/><path d="M8 34h14l5-9 7 18 5-9h17" fill="none" stroke="#1E9BFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(t._x);t._x=setTimeout(()=>t.style.display='none',3200);}
+/* ---------- API + MODE OFFLINE ---------- */
+// Batasan: aplikasi Apps Script tidak bisa memakai Service Worker, jadi halaman harus sudah terbuka (dimuat saat online).
+// Selama halaman terbuka: data yang pernah dibuka tampil dari salinan di perangkat; Input Data diantre lalu dikirim otomatis.
+const NETRE = /(network|failed to fetch|networkerror|load failed|err_internet|err_network|err_connection|err_name_not_resolved|offline)/i;
+const MSG_NOCACHE = 'Tidak ada koneksi internet dan data ini belum tersimpan di perangkat. Buka menu ini saat online terlebih dahulu.';
+const MSG_NEEDNET = 'Tidak ada koneksi internet. Fitur ini memerlukan koneksi.';
+const READ_C = { getView: 1, getMingguList: 1, getDesa: 1, getKalender: 1, getDashboardOptions: 1, getGrafikTrendData: 1, getPasien: 1, getRegister: 1 };
+const WRITE_Q = { saveLaporanUmum: 1, saveLaporanWabah: 1 };
+const ST = { fail: false, toastT: 0 };
+function netErr(m){ const e = new Error(m); e.net = true; return e; }
+function isNetErr(e){ return !!(e && (e.net || NETRE.test(String((e && e.message) || '')))); }
+function apiT(ms, fn, ...a){
+  return new Promise((ok, no) => {
+    let done = false, tm = 0;
+    const fin = f => v => { if (done) return; done = true; clearTimeout(tm); f(v); };
+    tm = setTimeout(fin(() => no(netErr('Server tidak merespons (lebih dari ' + Math.round(ms / 1000) + ' detik). Periksa koneksi lalu coba lagi. Bila tadi sedang menyimpan data, cek hasilnya dahulu sebelum mengulang.'))), ms);
+    try {
+      google.script.run.withSuccessHandler(fin(ok)).withFailureHandler(fin(e => {
+        const m = String((e && e.message) || e).replace(/^Error:\s*/, '');
+        if (/SESI_HABIS/.test(m)) { localLogout('Sesi berakhir, silakan login kembali.'); }
+        no(NETRE.test(m) ? netErr(m) : new Error(m));
+      }))[fn](...a);
+    } catch (e) { fin(() => no(netErr('Tidak dapat menghubungi server: ' + ((e && e.message) || e))))(); }
+  });
+}
+const api = (fn, ...a) => apiT(90000, fn, ...a);
+
+/* penyimpanan di perangkat (localStorage; cadangan memori bila diblokir browser) */
+const OFF = (function(){
+  const P = 'sipare_off_', mem = {}, VIEW = 'getView|';
+  let persist = true;
+  try { localStorage.setItem(P + 't', '1'); localStorage.removeItem(P + 't'); } catch (e) { persist = false; }
+  function rawGet(k){ try { const v = localStorage.getItem(P + k); if (v != null) return v; } catch (e) {} return k in mem ? mem[k] : null; }
+  function rawSet(k, v){ try { localStorage.setItem(P + k, v); delete mem[k]; return true; } catch (e) { mem[k] = v; return false; } }
+  function rawDel(k){ try { localStorage.removeItem(P + k); } catch (e) {} delete mem[k]; }
+  function idx(){ try { return JSON.parse(rawGet('i') || '{}') || {}; } catch (e) { return {}; } }
+  function evict(ix, n){ Object.keys(ix).filter(k => k.indexOf(VIEW) !== 0).sort((a, b) => ix[a] - ix[b]).slice(0, n).forEach(k => { rawDel('c:' + k); delete ix[k]; }); }
+  return {
+    persist: () => persist,
+    get: rawGet, set: rawSet,
+    has: key => key in idx(),
+    cSet(key, v){ try { const ix = idx(), rec = JSON.stringify({ t: Date.now(), v: v }); if (!rawSet('c:' + key, rec)) { evict(ix, 10); rawSet('c:' + key, rec); } ix[key] = Date.now(); rawSet('i', JSON.stringify(ix)); } catch (e) {} },
+    cGet(key){ try { const s = rawGet('c:' + key); if (!s) return null; const r = JSON.parse(s), ttl = key.indexOf(VIEW) === 0 ? 30 * 864e5 : 7 * 864e5; return Date.now() - r.t > ttl ? null : r; } catch (e) { return null; } },
+    clearData(){ try { const ix = idx(); Object.keys(ix).filter(k => k.indexOf(VIEW) !== 0).forEach(k => { rawDel('c:' + k); delete ix[k]; }); rawSet('i', JSON.stringify(ix)); } catch (e) {} }   // salinan data pasien dibuang saat logout; antrean TIDAK dibuang
+  };
+})();
+
+/* antrean laporan offline (Input Data) */
+const Q = {
+  all(){ try { const a = JSON.parse(OFF.get('q') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } },
+  save(a){
+    const done = a.filter(x => x.st === 'done').slice(-5);
+    return OFF.set('q', JSON.stringify(a.filter(x => x.st !== 'done').concat(done)));
+  },
+  pending(){ return Q.all().filter(x => x.st === 'pending'); },
+  add(fn, args){
+    const a = Q.all(), it = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), fn: fn, args: args, ts: Date.now(), by: ($('un') || {}).textContent || '', st: 'pending' };
+    a.push(it); return { it: it, persisted: Q.save(a) };
+  },
+  patch(id, o){ const a = Q.all(), it = a.find(x => x.id === id); if (it) { Object.assign(it, o); Q.save(a); } },
+  del(id){ Q.save(Q.all().filter(x => x.id !== id)); }
+};
+const OFFQ = {
+  fns: {},
+  list: () => Q.all(),
+  pending: () => Q.pending().length,
+  send: () => syncQueue(true),
+  remove(id){ Q.del(id); this.emit(); updateBanner(); },
+  take(id){ const it = Q.all().find(x => x.id === id) || null; if (it) { Q.del(id); this.emit(); updateBanner(); } return it; },
+  on(k, f){ this.fns[k] = f; },
+  emit(){ Object.keys(this.fns).forEach(k => { try { this.fns[k](); } catch (e) {} }); }
+};
+
+function offline(){ return !navigator.onLine || ST.fail; }
+function fmtT(t){ try { return new Date(t).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
+function updateBanner(){
+  const b = $('offb'); if (!b) return;
+  const off = offline(), pend = Q.pending().length;
+  if (!off && !pend) { b.hidden = true; return; }
+  b.className = 'offb ' + (off ? 'off' : 'pend');
+  b.innerHTML = off
+    ? '<span>📴 <b>Mode offline.</b> Data yang tampil adalah salinan terakhir di perangkat. Input Data tetap bisa dipakai: laporan disimpan lalu dikirim otomatis saat online.' + (pend ? ' <b>' + pend + ' laporan menunggu.</b>' : '') + '</span>'
+    : '<span>⏳ <b>' + pend + ' laporan offline</b> menunggu dikirim.</span><button class="btn sm" id="offSend" type="button">Kirim sekarang</button>';
+  b.hidden = false;
+}
+function markFail(){ ST.fail = true; updateBanner(); }
+function okNow(){ ST.fail = false; updateBanner(); }
+function servedCache(h){
+  updateBanner();
+  if (Date.now() - ST.toastT > 30000) { ST.toastT = Date.now(); toast('Menampilkan salinan data tersimpan (' + fmtT(h.t) + ').'); }
+}
+
+async function secRead(fn, a){
+  const cacheable = !(fn === 'getPasien' && a[0] && String(a[0].q || '').trim());     // hasil pencarian tidak disimpan
+  const key = fn + '|' + JSON.stringify(a);
+  if (!navigator.onLine) {
+    const h = cacheable ? OFF.cGet(key) : null;
+    if (h) { servedCache(h); return h.v; }
+    throw new Error(MSG_NOCACHE);
+  }
+  try {
+    const v = await apiT(cacheable && OFF.has(key) ? 25000 : 90000, fn, TOKEN, ...a);   // ada salinan: tunggu lebih singkat sebelum memakainya
+    if (cacheable && v !== undefined && v !== null) OFF.cSet(key, v);
+    okNow();
+    return v;
+  } catch (e) {
+    if (!isNetErr(e)) throw e;
+    markFail();
+    const h = cacheable ? OFF.cGet(key) : null;
+    if (h) { servedCache(h); return h.v; }
+    throw new Error(MSG_NOCACHE);
+  }
+}
+async function secWrite(fn, a){
+  if (navigator.onLine) {
+    try { const r = await api(fn, TOKEN, ...a); okNow(); return r; }
+    catch (e) {
+      if (/SESI_HABIS/.test(String((e && e.message) || ''))) {            // sesi habis: simpan dulu agar tidak hilang, kirim setelah login
+        Q.add(fn, a); updateBanner();
+        toast('Sesi berakhir. Laporan Anda disimpan di perangkat dan dikirim otomatis setelah login kembali.');
+        throw e;
+      }
+      if (!isNetErr(e)) throw e;
+      markFail();
+    }
+  }
+  const q = Q.add(fn, a); updateBanner(); OFFQ.emit();
+  return { queued: true, id: q.it.id, n: Q.pending().length, persisted: q.persisted && OFF.persist() };
+}
+function sec(fn, ...a){
+  if (WRITE_Q[fn]) return secWrite(fn, a);
+  if (READ_C[fn]) return secRead(fn, a);
+  if (!navigator.onLine) return Promise.reject(new Error(MSG_NEEDNET));
+  return api(fn, TOKEN, ...a).then(v => { okNow(); return v; }, e => { if (isNetErr(e)) markFail(); throw e; });
+}
+
+let syncing = false;
+async function syncQueue(manual){
+  if (syncing || !TOKEN) return;
+  const pend = Q.pending();
+  if (!pend.length) { if (manual) toast('Tidak ada laporan yang menunggu.'); return; }
+  if (!navigator.onLine) { if (manual) toast(MSG_NEEDNET); return; }
+  syncing = true; let sent = 0, bad = 0;
+  try {
+    for (const it of pend) {
+      let r;
+      try { r = await api(it.fn, TOKEN, ...it.args); }
+      catch (e) {
+        if (isNetErr(e)) { markFail(); break; }
+        if (/SESI_HABIS/.test(String((e && e.message) || ''))) break;            // setelah login kembali, pengiriman dilanjutkan
+        Q.patch(it.id, { st: 'error', msg: String((e && e.message) || e) }); bad++; continue;
+      }
+      okNow();
+      const rs = (r && r.results) || [], bd = rs.filter(x => x.s !== 'ok');
+      Q.patch(it.id, { st: 'done', done: Date.now(), args: null, sum: { ok: (r && r.ok) || 0, n: rs.length, lines: bd.slice(0, 6).map(x => x.t) } });   // teks laporan dibuang setelah terkirim
+      sent++;
+    }
+  } finally { syncing = false; }
+  OFFQ.emit(); updateBanner();
+  if (sent || bad) toast(sent + ' laporan offline terkirim' + (bad ? ', ' + bad + ' perlu diperiksa di menu Input Data.' : '.'));
+}
+async function prefetch(){                         // siapkan salinan menu & data dasar selagi online
+  if (!navigator.onLine || !TOKEN) return;
+  try {
+    for (const v of ['Dashboard', 'Input', 'Pasien', 'Register']) {
+      const h = OFF.cGet('getView|' + JSON.stringify([v]));
+      if (!h || Date.now() - h.t > 864e5) await secRead('getView', [v]);
+    }
+    await secRead('getMingguList', []); await secRead('getDesa', []); await secRead('getKalender', []);
+  } catch (e) {}
+}
+window.addEventListener('online', () => { ST.fail = false; updateBanner(); toast('Kembali online.'); syncQueue(); });
+window.addEventListener('offline', () => { updateBanner(); toast('Koneksi terputus. SIPARE masuk mode offline.'); });
+document.addEventListener('click', e => { if (e.target.closest('#offSend')) syncQueue(true); });
+setInterval(async () => {                          // pantau pemulihan koneksi & kirim antrean
+  if (!TOKEN || !navigator.onLine) return;
+  if (ST.fail) { try { await apiT(15000, 'checkSession', TOKEN); okNow(); } catch (e) { if (isNetErr(e)) return; okNow(); } }
+  if (Q.pending().length) syncQueue();
+}, 20000);
+
+/* ---------- LOGIN ---------- */
+function setImg(el, uri){ el.innerHTML = uri ? '<img src="'+uri+'" alt="">' : LOGO_SVG; }
+async function boot(){
+  setImg($('lgL'), ''); setImg($('kopL'), '');
+  try {
+    BOOT = await api('getBootstrap');
+    USERS = BOOT.users;
+    $('lu').innerHTML = '<option value="">— Pilih Username —</option>' + USERS.map(u => '<option value="'+esc(u.u)+'">'+esc(u.u)+'</option>').join('');
+    setImg($('lgL'), BOOT.logo); setImg($('kopL'), BOOT.logo);
+    if (BOOT.bg) { const b = document.body.style; b.backgroundImage = 'linear-gradient(rgba(244,251,247,.5),rgba(244,251,247,.5)),url("' + BOOT.bg + '")'; }
+    $('sign').innerHTML = BOOT.sign ? '<img src="'+BOOT.sign+'" alt="Digital signature">' : '';
+    const msg = 'Halo Kakak Admin SIPARE yang cantik jelita. Saya mengalami kendala login ke aplikasi SIPARE. Mohon bantuannya, Kak';
+    $('wa').href = 'https://wa.me/' + BOOT.wa + '?text=' + encodeURIComponent(msg);
+  } catch (e) { $('lerr').textContent = 'Gagal memuat: ' + e.message; $('lu').innerHTML = '<option value="">Gagal memuat</option>'; $('lretry').hidden = false; if (!(TOKEN && SS.get('sipare_n'))) return; }
+  if (TOKEN) { try { enter(await api('checkSession', TOKEN)); } catch (e) { if (isNetErr(e) && SS.get('sipare_n')) { markFail(); enter({ nama: SS.get('sipare_n') }); } else { TOKEN = ''; SS.del('sipare_t'); } } }
+}
+boot();
+$('lretry').onclick = () => { $('lretry').hidden = true; $('lerr').textContent = ''; $('lu').innerHTML = '<option value="">Memuat…</option>'; boot(); };
+$('lu').onchange = () => { const u = USERS.find(x => x.u === $('lu').value); $('ln').value = u ? u.n : ''; $('lp').value = ''; $('lerr').textContent = ''; };
+$('lpt').onclick = () => { const p = $('lp'); p.type = p.type === 'password' ? 'text' : 'password'; $('lpt').textContent = p.type === 'password' ? 'Lihat' : 'Sembunyi'; };
+$('lp').onkeydown = e => { if (e.key === 'Enter') $('lgo').click(); };
+$('lgo').onclick = async () => {
+  const u = $('lu').value, p = $('lp').value;
+  if (!u) return $('lerr').textContent = 'Pilih Username terlebih dahulu.';
+  if (!p) return $('lerr').textContent = 'Password wajib diisi.';
+  if (!navigator.onLine) return $('lerr').textContent = 'Tidak ada koneksi internet. Login memerlukan koneksi.';
+  $('lgo').disabled = true; $('lgo').textContent = 'Memeriksa…'; $('lerr').textContent = '';
+  try { const r = await api('login', u, p); TOKEN = r.token; SS.set('sipare_t', TOKEN); $('lp').value = ''; enter(r); }
+  catch (e) { $('lerr').textContent = e.message; }
+  $('lgo').disabled = false; $('lgo').textContent = 'MASUK';
+};
+function enter(s){ $('login').hidden = true; $('app').hidden = false; $('un').textContent = s.nama; $('hn').textContent = s.nama; SS.set('sipare_n', s.nama); go('home'); loadAsisten(); updateBanner(); syncQueue(); setTimeout(prefetch, 2500); }
+function localLogout(msg){
+  TOKEN = ''; SS.del('sipare_t'); SS.del('sipare_n'); OFF.clearData(); ST.fail = false; closeMenu(); closePop(); $('asist').hidden = true; $('asImg').removeAttribute('src');
+  document.querySelectorAll('.view[data-ok]').forEach(v => v.remove());   // buang view agar data tidak tersisa
+  Object.keys(Views).forEach(k => delete Views[k]);
+  $('app').hidden = true; $('login').hidden = false; $('lerr').textContent = msg || '';
+}
+$('out').onclick = () => { const t = TOKEN, n = OFFQ.pending(); if (navigator.onLine) api('logout', t).catch(()=>{}); localLogout(''); if (n) toast(n + ' laporan offline masih tersimpan di perangkat dan dikirim setelah login berikutnya.'); };
+
+/* ---------- MENU HAMBURGER ---------- */
+let isMenuOpen = false;
+function openMenu(){ document.body.classList.add('mo'); isMenuOpen = true; }
+function closeMenu(){ document.body.classList.remove('mo'); isMenuOpen = false; }
+$('hb').onclick = () => { if (isMenuOpen) { closeMenu(); } else { openMenu(); } };
+$('ov').onclick = closeMenu;
+document.onkeydown = e => { if (e.key === 'Escape') { closeMenu(); closePop(); } };
+$('brand').onclick = () => go('home');
+document.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) { go(b.dataset.v); if (innerWidth < 900) closeMenu(); } });
+
+
+/* ---------- HOME: ASISTEN & POP-UP ---------- */
+function trimImg(uri){                           // pangkas ruang transparan agar kaki tepat di dasar gambar
+  return new Promise(ok => {
+    const im = new Image();
+    im.onload = () => {
+      try {
+        const w = im.naturalWidth, h = im.naturalHeight, cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+        const cx = cv.getContext('2d'); cx.drawImage(im, 0, 0);
+        const d = cx.getImageData(0, 0, w, h).data; let t = h, b = -1, l = w, r = -1;
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x += 2) if (d[(y * w + x) * 4 + 3] > 24) { if (y < t) t = y; if (y > b) b = y; if (x < l) l = x; if (x > r) r = x; }
+        if (b < 0) return ok(uri);
+        const o = document.createElement('canvas'); o.width = r - l + 1; o.height = b - t + 1;
+        o.getContext('2d').drawImage(cv, l, t, o.width, o.height, 0, 0, o.width, o.height);
+        ok(o.toDataURL('image/png'));
+      } catch (e) { ok(uri); }
+    };
+    im.onerror = () => ok(uri); im.src = uri;
+  });
+}
+let ASLOADED = false;
+async function loadAsisten(){
+  if (ASLOADED) { $('asist').hidden = !$('asImg').getAttribute('src'); return; }
+  try { const u = await sec('getHomeImage', 'asisten'); if (u) { $('asImg').src = await trimImg(u); $('asist').hidden = false; ASLOADED = true; } } catch (e) {}
+}
+function closePop(){ $('pop').classList.remove('on'); }
+function openPop(title, html, zoomable){
+  $('pt').textContent = title; $('pb').className = 'pbody'; $('pb').innerHTML = html;
+  $('pz').hidden = !zoomable; $('pz').textContent = 'Perbesar'; $('pop').classList.add('on');
+}
+$('pc').onclick = closePop;
+$('pop').onclick = e => { if (e.target === $('pop')) closePop(); };
+$('pz').onclick = () => { const z = $('pb').classList.toggle('zoom'); $('pz').textContent = z ? 'Perkecil' : 'Perbesar'; };
+function kalHtml(d){
+  const rows = d.rows, bg = d.bg; let h = '<div class="tw"><table class="kt">';
+  rows.forEach((r, i) => {
+    const isWk = i === 8;
+    h += '<tr' + (isWk ? ' class="wk"' : '') + '>';
+    if (i === 0) {                                  // baris bulan: sel kosong = lanjutan bulan sebelumnya (colspan)
+      h += '<th style="background:' + esc(bg[0][0]) + '">' + esc(r[0]) + '</th>';
+      let j = 1; while (j < r.length) { let k = j + 1; while (k < r.length && String(r[k]).trim() === '') k++; h += '<th class="ms" colspan="' + (k - j) + '" style="background:' + esc(bg[0][j]) + '">' + esc(r[j]) + '</th>'; j = k; }
+    } else {
+      r.forEach((x, j) => { h += '<td style="background:' + esc(bg[i][j]) + '"' + (j > 0 && String(rows[0][j]).trim() !== '' ? ' class="ms"' : '') + '>' + esc(x) + '</td>'; });
+    }
+    h += '</tr>';
+  });
+  return h + '</table></div>';
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-pop]'); if (!b) return;
+  const k = b.dataset.pop;
+  if (k === 'kalender') {
+    openPop('Kalender', '<div class="ld">Memuat…</div>', false);
+    try { const d = await sec('getKalender'); $('pt').textContent = 'Kalender Epidemiologi' + (d.tahun ? ' ' + d.tahun : ''); $('pb').innerHTML = kalHtml(d); }
+    catch (er) { $('pb').innerHTML = '<div class="err">' + esc(er.message) + '</div>'; }
+    return;
+  }
+  const ttl = k === 'poster' ? 'Tutorial Penggunaan Aplikasi' : 'Peta Wilayah UPTD PKM Loang';
+  openPop(ttl, '<div class="ld">Memuat gambar…</div>', false);
+  try {
+    const u = await sec('getHomeImage', k);
+    if (!u) { $('pb').innerHTML = '<div class="ld">Gambar belum tersedia. Hubungi Admin.</div>'; return; }
+    $('pb').innerHTML = '<img alt="' + esc(ttl) + '">'; $('pb').firstChild.src = u; $('pz').hidden = false;
+  } catch (er) { $('pb').innerHTML = '<div class="err">' + esc(er.message) + '</div>'; }
+});
+
+/* ---------- ASISTEN RAIN: BALON PESAN BERGANTI ---------- */
+const RAIN_PESAN = [
+  'Halo <b>{nama}</b>, Selamat Datang di SIPARE, Saya Rain. Klik pesan ini untuk informasi dasar penggunaan SIPARE.',
+  'Ikon <b>tiga garis</b> di kiri atas membuka daftar menu. Klik sekali untuk membuka, klik lagi untuk menutup. Klik logo atau nama SIPARE di kop untuk kembali ke HOME.',
+  'Ikon <b>Kalender</b> menampilkan kalender epidemiologi: pembagian minggu ke dan bulan sepanjang tahun, dengan warna berbeda tiap bulan.',
+  'Ikon <b>Poster Tutorial</b> menampilkan panduan penggunaan aplikasi. Pakai tombol Perbesar untuk memperjelas gambar, lalu Tutup untuk kembali.',
+  'Ikon <b>Peta Wilayah</b> menampilkan peta wilayah kerja UPTD PKM Loang.',
+  'Menu <b>Dashboard</b> menampilkan grafik trend kasus diare. Pilih bulan di Filter Periode, atau pilih Tahunan untuk data setahun.',
+  'Di Dashboard ada grafik wabah diare per minggu, per bulan, dan per tahun, baik per desa maupun menurut rentang usia.',
+  'Dashboard juga memuat persentase kasus menurut jenis kelamin, Ringkasan Kasus Diare, dan persentase kasus per wilayah (desa).',
+  'Tombol <b>Unduh PDF Dashboard</b> menyimpan tampilan Dashboard sesuai periode yang dipilih sebagai berkas PDF.',
+  'Menu <b>Input Data</b>: pilih Tanggal laporan, lalu tempel laporan WhatsApp ke kotak yang sesuai dan klik <b>INPUT</b>.',
+  'Kotak <b>Laporan Umum</b> untuk laporan kunjungan harian pustu (boleh beberapa pustu sekaligus). Centang Timpa data bila tanggal dan desa sudah pernah diinput.',
+  'Kotak <b>Laporan Wabah</b> untuk laporan pasien diare (boleh beberapa pasien sekaligus). Hasil penyimpanan tiap data tampil di bawah tombol INPUT.',
+  'Menu <b>Data Pasien</b> menampilkan data pasien wabah dalam bentuk kartu. Cari dengan nama, desa, atau NIK, atau saring berdasarkan Minggu.',
+  'Klik <b>Edit</b> pada kartu pasien untuk memperbaiki data. Isi nama, jenis kelamin, desa, tanggal sakit dan berobat, tanggal lahir, NIK, umur, serta Therapy, lalu klik Simpan.',
+  'Kartu berbingkai putus-putus berasal dari laporan kunjungan. Klik <b>Lengkapi</b> untuk mengisi data pasiennya. Desa dan tanggal berobat tidak bisa diubah di sini.',
+  'Bila data banyak, gunakan tombol <b>Sebelumnya</b> dan <b>Berikutnya</b> di bawah kartu untuk berpindah halaman.',
+  'Bila sinyal hilang, SIPARE tetap bisa dipakai selama halaman ini masih terbuka: data yang pernah dibuka tampil dari salinan di perangkat, dan laporan di <b>Input Data</b> disimpan lalu dikirim otomatis saat online.',
+  'Tombol <b>KELUAR</b> di kanan atas dipakai untuk mengakhiri sesi setelah selesai bertugas.',
+  'Demikian sekilas informasi dasar SIPARE.Semangat bertugas!'
+];
+let rainI = 0, rainT = 0;
+function rainNama(){ return esc($('hn').textContent || 'Petugas'); }
+function rainTampil(i, anim){
+  const b = $('rainBub'); if (!b) return;
+  const isi = () => {
+    $('rainTxt').innerHTML = RAIN_PESAN[i].replace('{nama}', rainNama());
+    $('rainInf').textContent = (i + 1) + ' / ' + RAIN_PESAN.length;
+    b.classList.remove('keluar');
+  };
+  clearTimeout(rainT);
+  if (anim) { b.classList.add('keluar'); rainT = setTimeout(isi, 170); } else isi();
+}
+function rainNext(){ rainI = (rainI + 1) % RAIN_PESAN.length; rainTampil(rainI, true); }   // setelah pesan terakhir kembali ke pesan pertama
+function rainReset(){ rainI = 0; rainTampil(0, false); }
+$('rainBub').onclick = rainNext;
+$('rainBub').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rainNext(); } };
+
+/* ---------- LAZY VIEW LOADER ---------- */
+async function go(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  document.querySelectorAll('#menu button').forEach(b => b.classList.toggle('on', b.dataset.v === name));
+  $('main').classList.toggle('wide', name === 'home');   // HOME memakai lebar penuh agar tidak ada ruang kosong
+  if (name === 'home') { $('v_home').classList.add('on'); rainReset(); return; }
+  let p = $('v_' + name);
+  if (!p) { p = document.createElement('section'); p.id = 'v_' + name; p.className = 'view'; p.innerHTML = '<div class="ld">Memuat menu…</div>'; $('main').appendChild(p); }
+  p.classList.add('on');
+  if (!p.dataset.ok) {
+    try {
+      p.innerHTML = await sec('getView', name);
+      p.querySelectorAll('script').forEach(o => { const s = document.createElement('script'); s.text = o.textContent; o.replaceWith(s); });
+      p.dataset.ok = 1;
+    } catch (e) { p.innerHTML = '<div class="card err">' + esc(e.message) + '</div>'; return; }
+  }
+  if (Views[name] && Views[name].show) Views[name].show();
+}
+</script>
+</body></html>
