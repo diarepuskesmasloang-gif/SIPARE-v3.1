@@ -204,7 +204,7 @@ main.wide .ico{width:100%;max-width:none;height:clamp(220px,20vw,300px)}
     </section>
   </main>
 </div>
-<div id="pop"><div class="pbox"><div class="phead"><h3 id="pt"></h3><button class="btn sm bl" id="pz" hidden>Perbesar</button><button class="btn sm" id="pc">Tutup</button></div><div class="pbody" id="pb"></div></div></div>
+<div id="pop"><div class="pbox"><div class="phead"><h3 id="pt"></h3><button class="btn sm bl" id="pg" hidden></button><button class="btn sm bl" id="pz" hidden>Perbesar</button><button class="btn sm" id="pc">Tutup</button></div><div class="pbody" id="pb"></div></div></div>
 <div id="toast"></div>
 
 <script>
@@ -480,7 +480,7 @@ async function loadAsisten(){
 function closePop(){ $('pop').classList.remove('on'); }
 function openPop(title, html, zoomable){
   $('pt').textContent = title; $('pb').className = 'pbody'; $('pb').innerHTML = html;
-  $('pz').hidden = !zoomable; $('pz').textContent = 'Perbesar'; $('pop').classList.add('on');
+  $('pg').hidden = true; $('pz').hidden = !zoomable; $('pz').textContent = 'Perbesar'; $('pop').classList.add('on');
 }
 $('pc').onclick = closePop;
 $('pop').onclick = e => { if (e.target === $('pop')) closePop(); };
@@ -509,7 +509,8 @@ document.addEventListener('click', async e => {
     catch (er) { $('pb').innerHTML = '<div class="err">' + esc(er.message) + '</div>'; }
     return;
   }
-  const ttl = k === 'poster' ? 'Tutorial Penggunaan Aplikasi' : 'Peta Wilayah UPTD PKM Loang';
+  if (k === 'poster') { showPoster('poster'); return; }
+  const ttl = 'Peta Wilayah UPTD PKM Loang';
   openPop(ttl, '<div class="ld">Memuat gambar…</div>', false);
   try {
     const u = await sec('getHomeImage', k);
@@ -517,6 +518,26 @@ document.addEventListener('click', async e => {
     $('pb').innerHTML = '<img alt="' + esc(ttl) + '">'; $('pb').firstChild.src = u; $('pz').hidden = false;
   } catch (er) { $('pb').innerHTML = '<div class="err">' + esc(er.message) + '</div>'; }
 });
+
+/* ---------- POSTER TUTORIAL: 2 POSTER SALING BERGANTI DALAM SATU POP-UP ---------- */
+const POSTERS = {
+  poster:    { ttl: 'Tutorial Penggunaan Aplikasi',      lain: 'poster_ss', tombol: 'Tutorial Spreadsheet' },
+  poster_ss: { ttl: 'Tutorial Penginputan Spreadsheet',  lain: 'poster',    tombol: 'Tutorial Aplikasi' }
+};
+const POSTER_IMG = {};            // cache gambar di memori halaman, agar pindah poster tidak memuat ulang
+let POSTER_TOK = 0;               // penanda: abaikan hasil muat yang sudah usang bila pengguna berpindah cepat
+async function showPoster(k){
+  const p = POSTERS[k], tok = ++POSTER_TOK;
+  openPop(p.ttl, '<div class="ld">Memuat gambar…</div>', false);
+  $('pg').textContent = p.tombol; $('pg').hidden = false; $('pg').onclick = () => showPoster(p.lain);
+  try {
+    let u = POSTER_IMG[k];
+    if (!u) { u = await sec('getHomeImage', k); if (u) POSTER_IMG[k] = u; }
+    if (tok !== POSTER_TOK) return;
+    if (!u) { $('pb').innerHTML = '<div class="ld">Gambar belum tersedia. Hubungi Admin.</div>'; return; }
+    $('pb').innerHTML = '<img alt="' + esc(p.ttl) + '">'; $('pb').firstChild.src = u; $('pz').hidden = false;
+  } catch (er) { if (tok === POSTER_TOK) $('pb').innerHTML = '<div class="err">' + esc(er.message) + '</div>'; }
+}
 
 /* ---------- ASISTEN RAIN: BALON PESAN BERGANTI ---------- */
 const RAIN_PESAN = [
