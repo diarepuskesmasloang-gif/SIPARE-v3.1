@@ -2,10 +2,6 @@
 <html lang="id"><head><base target="_top"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SIPARE UPTD PKM LOANG</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico?v=1">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=1">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192x192.png?v=1">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=1">
 <style>
 :root{--g:#22B14C;--g2:#3DD05F;--gd:#128A38;--gl:#E8F8EE;--b:#1E9BFF;--bd:#0B6FCC;--t:#16322A;--m:#5B7A6C;--ln:#D7EBDF;--r:#D93C3C}
 *{box-sizing:border-box}
@@ -227,19 +223,25 @@ const WRITE_Q = { saveLaporanUmum: 1, saveLaporanWabah: 1 };
 const ST = { fail: false, toastT: 0 };
 function netErr(m){ const e = new Error(m); e.net = true; return e; }
 function isNetErr(e){ return !!(e && (e.net || NETRE.test(String((e && e.message) || '')))); }
+// ALAMAT SERVER: tempel link /exec dari Deploy > Manage deployments (Web app URL)
+const API_URL = 'https://script.google.com/macros/s/AKfycbwvCxumfpVnoLUfxcH3miGaN5RW9-cEC1y8xJBLnWdST5ki14Qo70pkYF1O6tkq9o4/exec';
 function apiT(ms, fn, ...a){
-  return new Promise((ok, no) => {
-    let done = false, tm = 0;
-    const fin = f => v => { if (done) return; done = true; clearTimeout(tm); f(v); };
-    tm = setTimeout(fin(() => no(netErr('Server tidak merespons (lebih dari ' + Math.round(ms / 1000) + ' detik). Periksa koneksi lalu coba lagi. Bila tadi sedang menyimpan data, cek hasilnya dahulu sebelum mengulang.'))), ms);
-    try {
-      google.script.run.withSuccessHandler(fin(ok)).withFailureHandler(fin(e => {
-        const m = String((e && e.message) || e).replace(/^Error:\s*/, '');
-        if (/SESI_HABIS/.test(m)) { localLogout('Sesi berakhir, silakan login kembali.'); }
-        no(NETRE.test(m) ? netErr(m) : new Error(m));
-      }))[fn](...a);
-    } catch (e) { fin(() => no(netErr('Tidak dapat menghubungi server: ' + ((e && e.message) || e))))(); }
-  });
+  const ctl = new AbortController();
+  const tm = setTimeout(() => ctl.abort(), ms);
+  return fetch(API_URL, { method: 'POST', redirect: 'follow', signal: ctl.signal,
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, args: a }) })
+    .then(r => { if (!r.ok) throw netErr('Server menjawab ' + r.status + '.'); return r.json(); })
+    .then(j => {
+      if (j && j.ok) return j.v;
+      const m = String((j && j.e) || 'Terjadi kesalahan di server.');
+      if (/SESI_HABIS/.test(m)) { localLogout('Sesi berakhir, silakan login kembali.'); }
+      throw new Error(m);
+    }, e => {
+      if (e && e.net) throw e;
+      if (e && e.name === 'AbortError') throw netErr('Server tidak merespons (lebih dari ' + Math.round(ms / 1000) + ' detik). Periksa koneksi lalu coba lagi. Bila tadi sedang menyimpan data, cek hasilnya dahulu sebelum mengulang.');
+      throw netErr('Tidak dapat menghubungi server: ' + ((e && e.message) || e));
+    })
+    .finally(() => clearTimeout(tm));
 }
 const api = (fn, ...a) => apiT(90000, fn, ...a);
 
