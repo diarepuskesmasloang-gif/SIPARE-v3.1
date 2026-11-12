@@ -115,9 +115,28 @@
 
 .dash-grid {
   display: grid;
-  grid-template-columns: 1fr 1.1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
+  align-items: stretch;
+  margin-bottom: 16px;
 }
+.dash-grid > .dash-card { margin-bottom: 0; display: flex; flex-direction: column; }
+/* Judul kartu sejajar & sama tinggi (kartu Jenis Kelamin = kartu Ringkasan) */
+.sym-ban { min-height: 52px; display: flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1.3; box-sizing: border-box; }
+.summary-list { flex: 1; display: flex; flex-direction: column; }
+.summary-list .summary-item { flex: 1; padding: 6px 10px; }
+.sym-body { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 250px; }
+
+/* Diagram lingkaran 3D */
+.pie3d { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; width: 100%; }
+.pie3d-cv { flex: 1 1 250px; min-width: 220px; height: 250px; position: relative; }
+.pie3d-cv canvas { position: absolute; left: 0; top: 0; display: block; }
+.pie3d-lg { list-style: none; margin: 0; padding: 0; flex: 0 0 auto; }
+.pie3d-lg li { display: flex; align-items: flex-start; gap: 8px; margin: 5px 0; font-size: 12px; color: #16322A; line-height: 1.25; }
+.pie3d-lg i { width: 13px; height: 13px; border-radius: 3px; flex: 0 0 13px; margin-top: 1px; border: 1px solid rgba(0,0,0,.15); }
+.pie3d-lg b { display: block; font-weight: 700; }
+.pie3d-lg span { color: #4A5F55; font-size: 11px; }
+
 @media (max-width: 850px) {
   .dash-grid { grid-template-columns: 1fr; }
 }
@@ -125,9 +144,12 @@
 /* Ringkasan list */
 .summary-box {
   background: #ffffff;
-  border: 2px solid #22B14C;
+  border: 2px solid #C8E6C9;
   border-radius: 14px;
-  overflow: hidden;
+  padding: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
 }
 .summary-head {
   background: #008837;
@@ -181,6 +203,7 @@
   font-weight: 700;
   color: #333;
 }
+.desa-n { font-size: 11px; font-weight: 600; color: #4A5F55; }
 
 .footer-motto {
   background: #008837;
@@ -271,10 +294,10 @@
   <!-- Grafik usia bulanan -->
   <div class="dash-card">
     <div class="card-title-banner purple">
-      GRAFIK TREND WABAH DIARE BULANAN BERDASARKAN RENTANG USIA
+      DIAGRAM LINGKARAN WABAH DIARE BULANAN BERDASARKAN RENTANG USIA
       <div style="font-weight:400;font-size:12px;" id="dashSubUsiaBulanan">Tahun / Bulan</div>
     </div>
-    <div style="height:260px;position:relative;"><canvas id="chartUsiaBulanan"></canvas></div>
+    <div class="pie3d" id="pieUsiaBulanan"><div class="pie3d-cv"><canvas></canvas></div><ul class="pie3d-lg"></ul></div>
   </div>
 
   <!-- Grafik tahunan per desa -->
@@ -289,29 +312,30 @@
   <!-- Grafik usia tahunan -->
   <div class="dash-card">
     <div class="card-title-banner purple">
-      GRAFIK TREND WABAH DIARE TAHUNAN BERDASARKAN RENTANG USIA
+      DIAGRAM LINGKARAN WABAH DIARE TAHUNAN BERDASARKAN RENTANG USIA
       <div style="font-weight:400;font-size:12px;" id="dashSubUsiaTahunan">Tahun</div>
     </div>
-    <div style="height:260px;position:relative;"><canvas id="chartUsiaTahunan"></canvas></div>
+    <div class="pie3d" id="pieUsiaTahunan"><div class="pie3d-cv"><canvas></canvas></div><ul class="pie3d-lg"></ul></div>
   </div>
 
   <!-- Grid 3 Kolom -->
   <div class="dash-grid">
     <!-- Jenis Kelamin -->
     <div class="dash-card">
-      <div class="card-title-banner green" style="font-size: 13px;">
+      <div class="card-title-banner green sym-ban">
         PRESENTASE KASUS DIARE<br>BERDASARKAN JENIS KELAMIN
       </div>
-      <div style="height: 180px; position: relative;">
-        <canvas id="chartJK"></canvas>
+      <div class="sym-body">
+        <div class="pie3d" id="pieJK"><div class="pie3d-cv"><canvas></canvas></div><ul class="pie3d-lg"></ul></div>
       </div>
     </div>
 
     <!-- Ringkasan -->
     <div class="summary-box">
-      <div class="summary-head">
+      <div class="card-title-banner green sym-ban">
         RINGKASAN KASUS DIARE
       </div>
+      <div class="summary-list">
       <div class="summary-item">
         <span class="summary-label">📋 Total Kasus</span>
         <span class="summary-value" id="sumTotal">0 Kasus</span>
@@ -340,6 +364,7 @@
         <span class="summary-label">📍 Desa Tertinggi Kasus</span>
         <span class="summary-value" id="sumDesaTertinggi">-</span>
       </div>
+      </div>
     </div>
   </div>
 
@@ -364,7 +389,7 @@
 
 <script>
 (function() {
-  let weeklyChart, monthlyVillageChart, monthlyAgeChart, annualVillageChart, annualAgeChart, jkChart;
+  let weeklyChart, monthlyVillageChart, annualVillageChart;
   let dashboardYear = new Date().getFullYear();
   const LIB_H2C = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
   const LIB_PDF = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
@@ -439,6 +464,7 @@
         <div class="desa-circle-item">
           <div class="desa-circle" style="border-color:${colors[idx % colors.length]}">${item.pct}%</div>
           <div class="desa-name">${esc(item.name)}</div>
+          ${item.n != null ? '<div class="desa-n">' + item.n + ' kasus</div>' : ''}
         </div>`).join('');
     } else {
       desaBox.innerHTML = '<div style="color:#777;font-style:italic;">Data kasus belum tersedia pada periode ini.</div>';
@@ -454,9 +480,7 @@
       {label:'Laki-laki', key:'laki', color:'#1E9BFF'}
     ], 'Desa', 'Jumlah Kasus', c => { monthlyVillageChart = c; }, false);
 
-    renderLineChart('chartUsiaBulanan', monthlyAgeChart, d.monthlyAge, [
-      {label:'Jumlah Kasus', key:'values', color:'#6A1B9A'}
-    ], 'Rentang Usia', 'Jumlah Kasus', c => { monthlyAgeChart = c; }, false);
+    renderAgePie('pieUsiaBulanan', d.monthlyAge);
 
     renderLineChart('chartTahunanDesa', annualVillageChart, d.annualVillage, [
       {label:'Total Kasus', key:'total', color:'#128A38'},
@@ -464,9 +488,7 @@
       {label:'Laki-laki', key:'laki', color:'#1E9BFF'}
     ], 'Desa', 'Jumlah Kasus', c => { annualVillageChart = c; }, false);
 
-    renderLineChart('chartUsiaTahunan', annualAgeChart, d.annualAge, [
-      {label:'Jumlah Kasus', key:'values', color:'#6A1B9A'}
-    ], 'Rentang Usia', 'Jumlah Kasus', c => { annualAgeChart = c; }, false);
+    renderAgePie('pieUsiaTahunan', d.annualAge);
 
     renderJKChart(d.jk || {});
   }
@@ -512,26 +534,136 @@
     save(chart);
   }
 
-  function renderJKChart(jk) {
-    if (jkChart) jkChart.destroy();
-    const laki = jk.laki || 0, perempuan = jk.perempuan || 0, total = laki + perempuan;
-    const pctL = total ? Math.round(laki / total * 100) : 0;
-    const pctP = total ? Math.round(perempuan / total * 100) : 0;
-    jkChart = new Chart(document.getElementById('chartJK').getContext('2d'), {
-      type: 'doughnut',
-      data: { labels: ['Laki-laki', 'Perempuan'], datasets: [{ data: [laki, perempuan], backgroundColor: ['#1E9BFF', '#E91E63'] }] },
-      plugins: [ChartDataLabels],
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 12 } },
-          datalabels: {
-            color: '#fff', font: { weight: 'bold', size: 11 },
-            formatter: (val, ctx) => val ? val + '\\n(' + (ctx.dataIndex === 0 ? pctL : pctP) + '%)' : ''
-          }
-        }
-      }
+  /* ===== Diagram lingkaran 3D (digambar sendiri di canvas, tanpa pustaka tambahan; ikut tercetak ke PDF) ===== */
+  const PIE_COL = ['#4F81BD', '#C0504D', '#9BBB59', '#8064A2', '#4BACC6', '#F79646'];
+  const pies = {};
+  function shade(hex, f) {
+    const n = parseInt(hex.slice(1), 16);
+    return 'rgb(' + Math.round((n >> 16) * f) + ',' + Math.round(((n >> 8) & 255) * f) + ',' + Math.round((n & 255) * f) + ')';
+  }
+  const fmtPct = (v, total, dec) => {
+    const p = total ? v / total * 100 : 0;
+    return (dec ? p.toFixed(1) : String(Math.round(p))).replace('.', ',') + '%';
+  };
+  function setPie(id, labels, values, colors, mode) {
+    const root = document.getElementById(id);
+    if (!root) return;
+    values = values.map(v => Number(v) || 0);
+    pies[id] = { labels: labels, values: values, colors: colors, mode: mode, geo: null };
+    const total = values.reduce((a, b) => a + b, 0);
+    root.querySelector('.pie3d-lg').innerHTML = labels.map((l, i) =>
+      '<li><i style="background:' + colors[i % colors.length] + '"></i><div><b>' + esc(l) + '</b><span>' +
+      values[i] + ' kasus' + (total ? ' · ' + fmtPct(values[i], total, mode === 'pct') : '') + '</span></div></li>').join('');
+    drawPie(id);
+  }
+  function drawPie(id) {
+    const P = pies[id], root = document.getElementById(id);
+    if (!P || !root) return;
+    const box = root.querySelector('.pie3d-cv'), cv = box.querySelector('canvas');
+    const W = box.clientWidth, H = box.clientHeight;
+    if (W < 20 || H < 20) return;                              // sedang tersembunyi; digambar ulang saat tampil
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    const g = cv.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    const total = P.values.reduce((a, b) => a + b, 0);
+    P.geo = null; cv.title = '';
+    if (!total) {
+      g.fillStyle = '#777'; g.font = 'italic 13px "Segoe UI",Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText('Data kasus belum tersedia pada periode ini.', W / 2, H / 2);
+      return;
+    }
+    const TILT = 0.55, depth = Math.max(12, Math.min(30, H * 0.11)), SMALL = 8;      // irisan < 8%: label ditaruh di luar (garis penunjuk)
+    const PI = Math.PI;
+    const hasOut = P.values.some(v => v > 0 && v / total * 100 < SMALL);
+    const compact = W < 420;                                   // layar sempit: label luar dipersingkat ("3 · 3,2%"); rincian lengkap ada di legenda
+    const outTxt = s => compact ? s.v + ' · ' + fmtPct(s.v, total, P.mode === 'pct') : s.v + ' kasus · ' + fmtPct(s.v, total, P.mode === 'pct');
+    g.font = 'bold 13px "Segoe UI",Arial,sans-serif';
+    let wMax = 0;
+    P.values.forEach(v => { if (v > 0 && v / total * 100 < SMALL) wMax = Math.max(wMax, g.measureText(outTxt({ v: v })).width); });
+    const sideM = hasOut ? Math.min(wMax + 22, W * 0.4) : 8, padY = hasOut ? 24 : 8;
+    const rx = Math.max(20, Math.min((W - 2 * sideM) / 2, (H - depth - 2 * padY) / (2 * TILT))), ry = rx * TILT;
+    const cx = W / 2, cy = (H - (2 * ry + depth)) / 2 + ry;
+    let a = -PI / 2;
+    const sl = [];
+    P.values.forEach((v, i) => { if (v > 0) { const a1 = a + 2 * PI * v / total; sl.push({ i: i, a0: a, a1: a1, v: v }); a = a1; } });
+    // dinding samping (hanya sisi depan: sudut 0..π)
+    sl.forEach(s => {
+      const st = Math.max(s.a0, 0), en = Math.min(s.a1, PI);
+      if (en <= st) return;
+      g.beginPath();
+      g.ellipse(cx, cy, rx, ry, 0, st, en, false);
+      g.ellipse(cx, cy + depth, rx, ry, 0, en, st, true);
+      g.closePath();
+      const col = P.colors[s.i % P.colors.length];
+      g.fillStyle = shade(col, 0.68); g.fill();
+      g.strokeStyle = shade(col, 0.5); g.lineWidth = 0.8; g.stroke();
     });
+    // permukaan atas
+    sl.forEach(s => {
+      g.beginPath(); g.moveTo(cx, cy); g.ellipse(cx, cy, rx, ry, 0, s.a0, s.a1, false); g.closePath();
+      g.fillStyle = P.colors[s.i % P.colors.length]; g.fill();
+      g.strokeStyle = '#ffffff'; g.lineWidth = 1.5; g.lineJoin = 'round'; g.stroke();
+    });
+    // label: JUMLAH + PERSENTASE untuk setiap irisan. Teks gelap + tepi putih agar terbaca di semua warna.
+    // Irisan besar: label di atas irisan (2 baris). Irisan kecil (< SMALL%): label di luar dengan garis penunjuk.
+    g.textBaseline = 'middle'; g.lineJoin = 'round';
+    const fmtLines = s => P.mode === 'jk' ? [s.v + ' kasus', fmtPct(s.v, total, false)] : [s.v + ' kasus', fmtPct(s.v, total, true)];
+    const paint = (t, x, y) => { g.lineWidth = 3.5; g.strokeStyle = 'rgba(255,255,255,0.95)'; g.strokeText(t, x, y); g.fillStyle = '#0B2A1A'; g.fillText(t, x, y); };
+    g.font = 'bold 13px "Segoe UI",Arial,sans-serif';
+    const outs = [];
+    sl.forEach(s => {
+      const mid = (s.a0 + s.a1) / 2;
+      if (s.v / total * 100 < SMALL) { outs.push({ s: s, mid: mid }); return; }
+      const k = sl.length === 1 ? 0 : 0.6, lx = cx + rx * k * Math.cos(mid), ly = cy + ry * k * Math.sin(mid), lines = fmtLines(s);
+      g.textAlign = 'center';
+      lines.forEach((t, n) => paint(t, lx, ly + (n - (lines.length - 1) / 2) * 15));
+    });
+    [1, -1].forEach(side => {                                 // kanan, lalu kiri; hindari label saling menimpa
+      const grp = outs.filter(o => (Math.cos(o.mid) >= 0 ? 1 : -1) === side).map(o => {
+        const ex = cx + rx * Math.cos(o.mid), ey = cy + ry * Math.sin(o.mid) + (Math.sin(o.mid) > 0 ? depth / 2 : 0);
+        return { o: o, ex: ex, ey: ey, ly: cy + ry * 1.14 * Math.sin(o.mid) + (Math.sin(o.mid) > 0 ? depth / 2 : 0), lx: cx + side * (rx * 1.1 * Math.abs(Math.cos(o.mid)) + 10) };
+      }).sort((p, q) => p.ly - q.ly);
+      for (let n = 1; n < grp.length; n++) if (grp[n].ly - grp[n - 1].ly < 16) grp[n].ly = grp[n - 1].ly + 16;
+      g.textAlign = side > 0 ? 'left' : 'right';
+      grp.forEach(it => {
+        const t = outTxt(it.o.s);
+        g.beginPath(); g.moveTo(it.ex, it.ey); g.lineTo(it.lx - side * 2, it.ly); g.strokeStyle = '#5B7A6C'; g.lineWidth = 1; g.stroke();
+        paint(t, it.lx, it.ly);
+      });
+    });
+    P.geo = { cx: cx, cy: cy, rx: rx, ry: ry, sl: sl, total: total };
+    if (!cv._hover) {
+      cv._hover = true;
+      cv.addEventListener('mousemove', ev => {
+        const G = (pies[id] || {}).geo; if (!G) return;
+        const r = cv.getBoundingClientRect(), dx = (ev.clientX - r.left - G.cx) / G.rx, dy = (ev.clientY - r.top - G.cy) / G.ry;
+        let t = '';
+        if (dx * dx + dy * dy <= 1) {
+          let ang = Math.atan2(dy, dx); if (ang < -Math.PI / 2) ang += 2 * Math.PI;
+          const s = G.sl.find(z => ang >= z.a0 && ang < z.a1);
+          if (s) t = pies[id].labels[s.i] + ': ' + s.v + ' kasus (' + fmtPct(s.v, G.total, true) + ')';
+        }
+        cv.title = t;
+      });
+    }
+  }
+  (function watchPies() {
+    ['pieUsiaBulanan', 'pieUsiaTahunan', 'pieJK'].forEach(id => {
+      const box = document.querySelector('#' + id + ' .pie3d-cv');
+      if (!box) return;
+      if (window.ResizeObserver) new ResizeObserver(() => drawPie(id)).observe(box);
+    });
+    window.addEventListener('resize', () => Object.keys(pies).forEach(drawPie));
+  })();
+
+  function renderAgePie(id, src) {
+    const labels = src && src.labels ? src.labels : [], values = src && src.values ? src.values : [];
+    setPie(id, labels, values, PIE_COL, 'pct');
+  }
+  function renderJKChart(jk) {
+    setPie('pieJK', ['Laki-laki', 'Perempuan'], [jk.laki || 0, jk.perempuan || 0], ['#1E9BFF', '#E91E63'], 'jk');
   }
 
   async function downloadPdf() {
